@@ -1,0 +1,63 @@
+<!-- chat/templates/chat/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Chat Rooms</title>
+</head>
+<body>
+<h4>Доступні чати</h4>
+<ul>
+    {% for room in rooms %}
+        <li>
+            <a href="/chat/{{ room.slug }}/">
+                {% if room.title %}
+                    {{ room.title }}
+
+                    {% for key, value in counts.items %}
+                        {% if room.id == key %}
+                            {{ value }}
+                        {% endif %}
+                    {% endfor %}
+
+                {% else %}
+                    {% for username in  room.users.all %}
+                        {{ username }}
+                    {% endfor %}
+                    {% for key, value in counts.items %}
+                        {% if room.id == key %}
+                            {{ value }}
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </a>
+        </li>
+    {% endfor %}
+</ul>
+
+<h4>Користувачі</h4>
+<ul>
+    {% for user in users %}
+        {% if user.username != request.user.username %}
+            <li>
+                <a href="/chat/{{ request.user.username }}_{{ user.username }}/">{{ user.username }}</a>
+            </li>
+        {% endif %}
+    {% endfor %}
+</ul>
+
+<script type="text/javascript">
+    document.querySelector('#room-name-input').focus();
+    document.querySelector('#room-name-input').onkeyup = function (e) {
+        if (e.keyCode === 13) {  // enter, return
+            document.querySelector('#room-name-submit').click();
+        }
+    };
+
+    document.querySelector('#room-name-submit').onclick = function (e) {
+        var roomName = document.querySelector('#room-name-input').value;
+        window.location.pathname = '/chat/' + roomName + '/';
+    };
+</script>
+</body>
+</html>
