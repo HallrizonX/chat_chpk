@@ -4,60 +4,86 @@
 <head>
     <meta charset="utf-8"/>
     <title>Chat Rooms</title>
-</head>
-<body>
-<h4>Доступні чати</h4>
-<ul>
-    {% for room in rooms %}
-        <li>
-            <a href="/chat/{{ room.slug }}/">
-                {% if room.title %}
-                    {{ room.title }}
-
-                    {% for key, value in counts.items %}
-                        {% if room.id == key %}
-                            {{ value }}
-                        {% endif %}
-                    {% endfor %}
-
-                {% else %}
-                    {% for username in  room.users.all %}
-                        {{ username }}
-                    {% endfor %}
-                    {% for key, value in counts.items %}
-                        {% if room.id == key %}
-                            {{ value }}
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
-            </a>
-        </li>
-    {% endfor %}
-</ul>
-
-<h4>Користувачі</h4>
-<ul>
-    {% for user in users %}
-        {% if user.username != request.user.username %}
-            <li>
-                <a href="/chat/{{ request.user.username }}_{{ user.username }}/">{{ user.username }}</a>
-            </li>
-        {% endif %}
-    {% endfor %}
-</ul>
-
-<script type="text/javascript">
-    document.querySelector('#room-name-input').focus();
-    document.querySelector('#room-name-input').onkeyup = function (e) {
-        if (e.keyCode === 13) {  // enter, return
-            document.querySelector('#room-name-submit').click();
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <style>
+        .badge {
+            padding: 0 !important;
+            margin-left: 0 !important;
+            min-width: 0 !important;
         }
-    };
+        .message{
+            padding: 0px;
+            margin-block-start: 0;
+            margin-block-end: 0;
+        }
+        .username{
+            color: #66bb6a;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="blue lighten-5">
+<div class="container z-depth-3" style="border: 2px solid grey; border-radius: 3px; margin-top: 10%;">
+    <div class="row">
+        <div class="col s12 center-align" style="padding: 4px">
+            <img class="responsive-img" src="/static/logo/third_example.png" width="100">
+            <div class="divider" style="height: 3px; background: grey; border-radius: 1000px"></div>
+        </div>
 
-    document.querySelector('#room-name-submit').onclick = function (e) {
-        var roomName = document.querySelector('#room-name-input').value;
-        window.location.pathname = '/chat/' + roomName + '/';
-    };
-</script>
+        <div class="col s4">
+            <div class="section">
+                <div class="collection fild_with_messages" style="overflow-y: auto; height: 400px">
+                    <a class="collection-item">
+                        <span style="font-size: 20px; margin-bottom: 5px">
+                             <i class="material-icons" style="font-size: 25px; position: absolute; right: 10px">account_circle</i>
+                            {{ request.user }}</span>
+                    </a>
+                    {% for room in rooms %}
+                        <a class="collection-item room" id="room_message_{{ room.id }}" href="/chat/{{ room.slug }}/">
+                            {% if room.title %}
+                                <span class="room-title">{{ room.title|truncatechars:12 }}</span>
+                                {% for key, value in counts.items %}
+                                    {% if room.id == key %}
+                                        <span class="badge">{{ value }}</span>
+                                    {% endif %}
+                                {% endfor %}
+
+                            {% else %}
+                                {% for username in  room.users.all %}
+                                    <span class="room-title">{{ username|truncatechars:12 }}</span>
+                                {% endfor %}
+                                {% for key, value in counts.items %}
+                                    {% if room.id == key %}
+                                        <span class="badge">{{ value }}</span>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        </a>
+                    {% endfor %}
+                    <div class="divider"></div>
+                    <div class="divider"></div>
+                    {% for user in users %}
+                        {% if user.username != request.user.username %}
+                            <a class="collection-item room"
+                               href="/chat/{{ request.user.username }}_{{ user.username }}/">{{ user.username }}</a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+        <div class="col s8">
+            <div class="section chat-field">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="/static/index_core.js"></script>
 </body>
 </html>

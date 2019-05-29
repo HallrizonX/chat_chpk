@@ -27,7 +27,7 @@ def create_new_room(room_name: str):
 
 
 @database_sync_to_async
-def get_old_messages(username: str,room_name: str):
+def get_old_messages(username: str, room_name: str):
     try:
         room = Room.objects.select_related().get(slug=room_name)
         messages = room.message.all().order_by('id')
@@ -50,3 +50,14 @@ def write_message_to_db(room_name: str, username: str, msg: str):
         return False
 
     return True
+
+
+@database_sync_to_async
+def get_counts_unread_messages(user):
+    user = User.objects.get(username=user)
+    rooms = Room.objects.select_related().filter(users=user)
+    counts = {}
+    for room in rooms:
+        count = room.message.filter(watched=False).exclude(user=user).count()
+        counts[room.id] = count
+    return counts

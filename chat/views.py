@@ -8,12 +8,11 @@ from chat.models import Room, User
 
 
 def index(request):
-    users = User.objects.all()
+    users = User.objects.all().exclude(room__users=request.user)
     rooms = Room.objects.select_related().filter(users=request.user)
     counts = {}
     for room in rooms:
         count = room.message.filter(watched=False).exclude(user=request.user).count()
-
         count = room.message.filter(watched=False).exclude(user=request.user).count()
         counts[room.id] = count
     return render(request, 'index.html', {
